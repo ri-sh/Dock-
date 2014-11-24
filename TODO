@@ -1,0 +1,11 @@
+TODO
+1. Add "My Events" page
+2. Make Windows Phone 7 app
+3. Make mobile site
+    a. Figure out how to intercept changePage properly
+    b. Write function to inject block activity data into myblock page
+    c. Test create event page and add image upload support
+    d. Write profile page
+    e. Test post function
+    f. Write event pag
+    g. Write about page

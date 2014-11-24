@@ -1,0 +1,31 @@
+{% extends "posts_template.html" %}
+
+{% block links %}
+{{ block.super }}
+{% endblock %}
+
+{% block data_url %}
+{{ block.super }}
+<script type="text/javascript">
+    var data_url = "/rest/block/offset=";
+</script>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+{% endblock %}
+
+{% block posts_header %}
+    <!-- Form to create a new post -->
+    <form id="create_post" name="create_post" action="/desktop/posts/create_post/" method="post">
+        <input type="text" name="text" />
+        <input type="submit" value="Post" />
+    </form>
+    </br>
+{% endblock %}
+
+{% block posts_footer %}
+    {% if activity|length == 0 %}
+    <h2>No one has posted anything in this block yet...be the first!</h2>
+    {% endif %}
+{% endblock %}

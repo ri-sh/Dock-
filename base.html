@@ -1,0 +1,84 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en">
+    <head profile="http://www.w3.org/2005/10/profile">
+        <meta name="viewport" content="width=device-width" />
+        <meta name="author" content="Rishabh Roy" />
+        <meta name="description" content="The Block is a location-based social network that allows you to interact with the world around you in a new way. The Block allows you to make posts or create events for your local 'block' (the square mile around you). Everything is open: any post you make is visible by anyone, as is any event you make." />
+        <link rel="icon" type="icon/png" href="{{ STATIC_PREFIX }}images/favicon.png" />
+        <link rel="shortcut icon" href="{{ STATIC_PREFIX }}images/favicon.ico" />
+        <link rel="image_src" href="{{ STATIC_PREFIX }}images/fb.png" />
+        <link rel="stylesheet" href="{{ STATIC_PREFIX }}static/default.css?kkjfk" />
+        <link rel="stylesheet" href="{{ STATIC_PREFIX }}static/bootstrap.min.css?kjdk" />
+        <script type="text/javascript">
+              var _gaq = _gaq || [];
+              _gaq.push(['_setAccount', 'UA-31669631-1']);
+              _gaq.push(['_setDomainName', 'inmyblock.com']);
+              _gaq.push(['_trackPageview']);
+
+              (function() {
+                          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                                  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                                    })();
+        </script>
+        <script type="text/javascript" src="{{ STATIC_PREFIX }}static/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_PREFIX }}static/bootstrap.min.js"></script>
+        {% block links %}{% endblock %}
+        <title>{% block title %}The Block{% endblock %}</title>
+    </head>
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <div class="row">
+                        {% if not request.user.is_authenticated %}
+                        <div class="span12">
+                        {% else %}
+                        <div class="span10 offset1">
+                        {% endif %}
+            <ul class="nav">
+                    <li class="desktop_only">
+                    <a class="brand" href="/">The Block</a>
+                    </li>
+                    <li class="mobile_only">
+                    <a class="mobile_brand" href="/">The Block</a>
+                    </li>
+                    {% if request.user.is_authenticated %}
+                    <li>
+                    <a href="/desktop/users/{{ request.user.id }}/activity/">{{ request.user.first_name }} {{ request.user.last_name }}</a>
+                    </li>
+                    <li class="desktop_only">
+                        <a href="/users/account/">Account</a>
+                    </li>
+                    {% endif %}
+            </ul>
+                        {% if not request.user.is_authenticated %}
+                        <!-- login form -->
+                        <form class="navbar-search pull-right form-inline desktop_only" name="login" action="/desktop/users/login/" method="post">
+                            <input type="email" class="span2" name="email" placeholder="Email" />
+                            <input type="password" class="span2" name="password" placeholder="Password" />
+                            <input type="submit" class="btn btn-success" value="Login" />
+                        </form>
+                        {% else %}
+                        <a class="pull-right btn btn-success" href="/desktop/users/logout/">Logout</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+        
+        <div class="container">
+            <div class="row">
+            {% block content %}
+            <span class="error">{{ error }}</span>
+            {% endblock %}
+            </div>
+        </div>
+        <footer>
+        Made by <a class="author" href="/desktop/sharingan/">Rishabh Roy</a> &copy; 2014| <a href="mailto: feedback@inmyblock.com" class="author">Feedback</a>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="span8 offset2 main_content">
+<div class="page-header">
+    <h1>Account settings</h1>
+</div>
+<p class="lead">Enter your password to change settings</p>
+
+<form name="edit_account" action="/users/account/" enctype="multipart/form-data" method="post" >
+    {% csrf_token %}
+    <!-- form for changing password -->
+    <span class="form_label">New Password:</span><input class="event_input" type="password" name="new_password" /><br />
+
+    <!-- form for changing first/last name -->
+    <span class="form_label">First name:</span><input class="event_input" type="text" name="first_name" value="{{ request.user.first_name }}" /><br />
+    <span class="form_label">Last name:</span><input class="event_input" type="text" name="last_name" value="{{ request.user.last_name }}" /><br />
+
+    <!-- form for uploading profile picture -->
+    <span class="form_label">Profile pic:</span><input class="event_input" type="file" name="image" /><br />
+
+    <span class="form_label">Password:</span><input class="event_input" type="password" name="password" placeholder="Enter password to change settings" /><br />
+    {% if error %}<span class="form_label"></span><span class="error">Error: {{ error }}</span><br />{% endif %}
+    {% if saved %}<span class="form_label"></span><h3>Settings successfully saved.</h3><br />{% endif %}
+    <span class="form_label"></span><input class="btn btn-success" type="submit" value="Save settings" />
+</form>
+</div>
+{% endblock %}

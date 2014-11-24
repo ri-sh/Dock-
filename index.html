@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- welcome banner/explanation of The Block -->
+<h1>Welcome to The Block</h1>
+
+<!-- signup form -->
+<form name="signup" action="/desktop/users/signup/" method="post">
+    <table id="signup_form">
+        <tr>
+            <td>
+                E-mail:
+            </td>
+            <td>
+                <input type="text" name="email" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                First name:
+            </td>
+            <td>
+                <input type="text" name="first_name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Last name:
+            </td>
+            <td>
+                <input type="text" name="last_name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Password:
+            </td>
+            <td>
+                <input type="password" name="password" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Confirm password:
+            </td>
+            <td>
+                <input type="password" name="confirm_password" />
+            </td>
+        </tr>
+    </table>
+    <span class="error">{% if error %}Error: {{ error }}{% endif %}</span><br />
+    <span class="center"><input type="submit" value="Signup"/></span>
+</form>
+{% endblock %}

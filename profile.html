@@ -1,0 +1,24 @@
+{% extends "posts_template.html" %}
+
+{% block links %}
+{{ block.super }}
+{% endblock %}
+
+{% block data_url %}
+<script type="text/javascript">
+    var data_url = "/rest/users/{{info.id}}/activity/offset=";
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="span8 offset2 main_content">
+{% if info.profile_pic != 'default_profile.jpg' %}
+<img src="{{ STATIC_PREFIX }}images/{{ info.profile_pic }}" class="profile_pic"/>
+{% endif %}
+{{ block.super }}
+</div>
+{% endblock %}
+
+{% block posts_header %}
+<h2>{{ info.name }}'s posts:</h2>
+{% endblock %}

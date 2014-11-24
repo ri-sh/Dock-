@@ -1,0 +1,159 @@
+{% extends "posts_template.html" %}
+
+{% block links %}
+{{ block.super }}
+{% endblock %}
+
+{% block data_url %}
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/im_attending.js"></script>
+<script type="text/javascript">
+    var data_url = "/rest/block/offset=";
+
+    function markupItem (item) {
+        var markup = '';
+        if (item.type == 'post') {
+            markup += '<div class="divider"></div>' + 
+                '<img src="{{ STATIC_PREFIX }}images/Thumbnails/' + item.author.profile_pic + 
+                    '" class="thumbnail"/><div class="text_container post_container"><a href="/desktop/users/' + item.author.user_id 
+                        + '/activity/" class="author">' + item.author.name
+                        + '</a> <span class="timestamp"> posted ' + item.relative_timestamp 
+                        + ' | ' + '</span><a class="comments_link" href="/desktop/posts/' + item.id 
+                        + '/comments/"> ';
+            if (item.num_comments == 0) {
+                markup += 'Comment';
+            }
+            else if (item.num_comments == 1) {
+                markup += 'View <span class="badge badge-success">1</span> comment';
+            }
+            else {
+                markup += 'View <span class="badge badge-success">' + item.num_comments + '</span> comments';
+            }
+            markup += '</a><br /><span class="post_text large_text">' + item.text + '</span><br /></div>';
+        }
+        else {
+            //It is an event
+            markup += '<div class="divider"></div>' + 
+                '<img src="{{ STATIC_PREFIX }}images/Thumbnails/' + item.picture + 
+                    '" class="thumbnail"/><div class="text_container">' +
+                    '<a href="/desktop/block/events/' + item.id + '/ class="event_title large_text">Event: ' + item.title + ' </a><br/>' +
+                    '<span class="event_middle_row"><span class="timestamp">When:</span> ' + item.duration +
+                    ' <span class="timestamp">Where:</span> ' + item.location + '</span><br/>' +
+                    '<span class="timestamp">Created by ' + item.author.name + ' ' + item.relative_timestamp + ' | <span class="badge">' +
+                    item.num_attending + '</span> ';
+            if (item.num_attending == 1)
+                markup += 'person is attending |';
+            else
+                markup += 'people are attending |';
+            if (item.user_attending)
+                markup += '<span class="timestamp">You are attending.</span>';
+            else
+                markup += '<button class="btn btn-primary" id="attending_button' + item.id + '" value="I\'m attending</button>'+
+                            '<span id="attending_' + item.id + '" class="timestamp"></span>';
+            markup += '</div>';
+        }
+        return markup;
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+<div class="span8 offset2">
+<div class="row main_content">
+    <!-- Greeting and link to create a new event -->
+    <div class="page-header desktop_only">
+        <h1>Happening in your block today:</h1>
+    </div>
+
+        <!-- Form to create a new post -->
+        <form id="create_post" name="create_post" class="form-inline" action="/desktop/posts/create_post/" method="post">
+            <input type="text" name="text" id="post_input" placeholder="Post to this block" />
+            <input type="submit" class="btn btn-success" value="Post" />
+        </form>
+        <form id="create_event_button" name="create_event" action="/desktop/block/create_event/" method="get">
+            <input type="submit" class="btn btn-success" value="Create Event" />
+        </form>
+    
+    {% else %}
+<div class="span10 offset1 main_content landing_page">
+    <div class="row">
+        <div class="span6">
+            <div class="hero-unit desktop_only">
+            <h1>Welcome to The Block</h1>
+            <p>The Block is a location aware social network designed to help you discover what's happening around you. The Block allows you to view and create events happenning where you are. Events on the Block are totally open - anyone can see them, create them, and attend them. This makes spontaneous events such as a pickup game or a free stuff giveaway easier to find.</p>
+            </div>
+            <form class="mobile_only well" action="/desktop/users/login/" method="post">
+                <input type="email" placeholder="Email" name="email" />
+                <input type="password" placeholder="Password" name="password" />
+                <input type="submit" value="Login" class="btn btn-success" />
+            </form>
+            <div class="well mobile_only">
+            <h2>Welcome to The Block</h2>
+            <p>The Block is a location aware social network designed to help you discover what's happening around you. The Block allows you to view and create events happenning where you are. Events on the Block are totally open - anyone can see them, create them, and attend them. This makes spontaneous events such as a pickup game or a free stuff giveaway easier to find.</p>
+            </div>
+        </div>
+        <div class="span4">
+        <form class="well" name="signup" action="/desktop/users/signup/" method="post">
+        <h3>Signup:</h3>
+        <div class="divider"></div>
+            <input type="email" placeholder="Email" name="email" value="{{ email }}" /><br />
+            <input type="text" placeholder="Name" name="name" value="{{ first_name }}{{ last_name }}" /><br />
+            <input type="password" placeholder="Password" name="password" value="{{ password }}" /><br />
+            {% if error %}<div class="alert alert-error">Error: {{ error }}</div><br />{% endif %}
+            {% if prompt %}<div class="alert alert-success">{{ prompt }}</div>{% endif %}
+            <p>By clicking "Signup" you are agreeing to our <a id="tos_link" class="author" href="/tos/">terms of service.</a><br />
+            <input type="submit" id="signup_button" class="btn btn-success" value="Signup"/>
+            <p><a class="author" href="/desktop/users/forgot_password/">Forgot your pasword? Click here</a></p>
+        </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+    <!-- List of events -->
+    {% for item in activity %}
+    <div class="divider"></div>
+        {% if item.type == 'post' %}
+        <img src="{{ STATIC_PREFIX }}images/Thumbnails/{{ item.author.profile_pic }}" class="thumbnail" alt="event" />
+        <div class="text_container post_container">
+        <a href="/desktop/users/{{ item.author.user_id }}/activity/" class="author">{{ item.author.name }}</a> <span class="timestamp"> posted {{ item.relative_timestamp }} | </span>
+        <a class="comments_link" href="/desktop/posts/{{ item.id }}/comments/">
+            {% if item.num_comments == 0 %}
+            Comment
+            {% else %}
+                {% if item.num_comments == 1 %}
+                View <span class="badge badge-success">{{ item.num_comments }}</span> comment
+                {% else %}
+                View <span class="badge badge-success">{{ item.num_comments }}</span> comments
+                {% endif %}
+            {% endif %}
+        </a><br />
+        <span class="post_text large_text">{{ item.text }}</span>
+        <br />
+        </div>
+        {% else %}
+        <img src="{{ STATIC_PREFIX }}images/Thumbnails/{{ item.picture }}" class="thumbnail" />
+        <div class="text_container">
+            <a class="event_title large_text" href="/desktop/block/events/{{ item.id }}/" class="event_title">Event: {{ item.title }}</a><br/>
+            <span class="event_middle_row"><span class="timestamp">When:</span> {{ item.duration }} <span class="timestamp">Where:</span> {{ item.location }}</span><br/>
+            <span class="timestamp">Created by {{ item.author.name }} {{ item.relative_timestamp }} | <span class="badge">{{ item.num_attending }}</span> 
+                {% if item.num_attending == 1 %}
+                person is attending | 
+                {% else %}
+                people are attending |
+                {% endif %}</span>
+            {% if item.user_attending %}
+            <span class="timestamp">You are attending.</span>
+            {% else %}
+            <button class="btn btn-success" id="attending_button{{ item.id }}" value="I'm attending" onclick="attendingEvent({{ item.id }})">I'm attending</button>
+            <span id="attending_{{ item.id }}" class="timestamp"></span>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
+    {% if activity|length == 0 %}
+    <br /><p class="lead">No one has posted anything in this block yet today...be the first</p><br />
+    {% endif %}
+    <div class="items"></div>
+</div>
+{% endblock %}

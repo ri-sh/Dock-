@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block links %}
+{{ block.super }}
+<script type="text/javascript">
+    var targetUrl = "/rest/posts/" + {{ post.id }} + "/comments/offset=";
+</script>
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/comment_loader.js?foo=bar"></script>
+{% endblock %}
+
+{% block content %}
+<div class="span8 offset2 main_content">
+<!-- Display original post -->
+<img src="{{ STATIC_PREFIX }}images/Thumbnails/{{ post.author.profile_pic }}" class="thumbnail"></img>
+<a class="author" href="/desktop/users/{{ post.author.user_id }}/activity/">{{ post.author.name }}</a> <span class="timestamp"> posted {{ post.relative_timestamp }}</span><br />
+<span class="post_text large_text">{{ post.text }}</span><br />
+<!-- Display comments -->
+<div class="comments well" id="comments_list">
+{% if comments|length == 10 %}
+    <!-- Display More comments link -->
+    <a href="#more_comments" class="comments_link" id="more_comments">Load more comments</a>
+{% endif %}
+{% for comment in comments %}
+<div class="post_container">
+<img src="{{ STATIC_PREFIX }}images/Thumbnails/{{ comment.author.profile_pic }}" class="thumbnail"></img>
+<a href="/desktop/users/{{ comment.author.user_id }}/activity/" class="author">{{ comment.author.name }}</a> <span class="timestamp"> commented {{ comment.relative_timestamp }}</span><br /> 
+<span class="post_text">{{ comment.text }}</span><br />
+</div>
+<div class="dark-divider"></div>
+{% endfor %}
+<!-- Form for adding a comment -->
+<form class="form form-inline" id="create_comment" name="create_comment" action="/desktop/posts/create_comment/" method="post">
+    <input type="text" class="event_input" name="text" placeholder="Comment on this post" />
+    <input type="hidden" name="post_id" value="{{ post.id }}" />
+    <input type="submit" class="btn btn-success" value="Comment" />
+</form>
+</div>
+</div>
+{% endblock %}

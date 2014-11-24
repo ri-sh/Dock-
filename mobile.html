@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>The Block</title>
+        <link rel="stylesheet" href="/images/theblock.min.css" />
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile.structure-1.1.0.min.css" />
+        <link rel="stylesheet" href="/images/mobile.css?foo=12" />
+        <script type="text/javascript" src="/images/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+        <script type="text/javascript">
+            {% if request.user.is_authenticated %}
+            var logged_in = true;
+            var user_id = {{ request.user.id }};
+            {% else %}
+            var logged_in = false;
+            var user_id = -1;
+            {% endif %}
+        </script>
+        <script type="text/javascript" src="/images/mobile.js?foo=12"></script>
+    </head>
+    <body>
+        <div data-role="page" id="home" data-theme="a" data-add-back-btn="true">
+            <div data-role="header" data-position="fixed" data-theme="b">
+                <h1>The Block</h1>
+                <a href="#navigation_loggedout" data-transition="none" class="ui-btn-right ui-btn ui-btn-icon-notext ui-btn-corner-all ui-shadow ui-btn-up-b" data-iconpos="notext" data-theme="b" data-role="button" data-icon="grid" title=" Navigation ">
+                                <span class="ui-btn-inner ui-btn-corner-all">
+                                                    <span class="ui-btn-text"> Navigation </span>
+                                                                    <span data-form="ui-icon" class="ui-icon ui-icon-grid ui-icon-shadow"></span>
+                                                                                </span>
+                                                                                        </a>
+            </div>
+                <div data-role="content">
+                    <h1>Welcome to The Block!</h1>
+                    <!-- login form -->
+                    <p id="login_error" class="error"></p>
+                    <label for="email" class="ui-hidden-accessible">Email:</label>
+                    <input type="email" name="email" id="email" value="" placeholder="E-mail"/>
+                    <label for="password" class="ui-hidden-accessible">Password:</label>
+                    <input type="password" name="password" id="password" value="" placeholder="Password"/>
+                    <button data-theme="b" onclick="login()">Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div data-role="page" id="navigation_loggedout" data-theme="a" data-add-back-btn="true">
+            <div data-role="header" data-position="fixed" data-theme="b">
+                <h1>Navigation</h1>
+            </div>
+            <div data-role="content">
+                <ul data-role="listview" data-theme="a">
+                    <li><a href="#home" data-transition="none">Home</a></li>
+                    <li><a href="#about" data-transition="none">About</a></li>
+                    <li><a href="#logout" data-transition="none">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div data-role="page" id="myblock" data-theme="a" data-add-back-btn="true">
+            <div data-role="header" data-position="fixed" data-theme="b">
+                <h1>In your block</h1>
+                <a href="#navigation" data-transition="none" class="ui-btn-right ui-btn ui-btn-icon-notext ui-btn-corner-all ui-shadow ui-btn-up-b" data-iconpos="notext" data-theme="b" data-role="button" data-icon="grid" title=" Navigation ">
+                                <span class="ui-btn-inner ui-btn-corner-all">
+                                                    <span class="ui-btn-text"> Navigation </span>
+                                                                    <span data-form="ui-icon" class="ui-icon ui-icon-grid ui-icon-shadow"></span>
+                                                                                </span>
+                                                                                        </a>
+            </div>
+            <div data-role="content">
+                <p class="error" id="my_block_error"></p>
+                <!-- post form and create event button -->
+                <fieldset class="ui-grid-a">
+                    <div class="ui-block-a" id="post_text_div">
+                        <label for="post_text" class="ui-hidden-accessible">Post:</label>
+                        <input type="text" name="post_text" id="post_text" data-mini="true" data-inline="false" value="" placeholder="Post to this block"/>
+                    </div>
+                    <div class="ui-block-b" id="create_post">
+                        <input type="submit" data-theme="b" value="Post" data-inline="false" data-mini="true" onclick="createPost()"/>
+                    </div>
+                </fieldset>
+                <a href="#create_event" data-role="button" data-theme="b" data-mini="false">Create Event</a>
+
+                <!-- listview for actual data -->
+                <ul id="myblock_listview" data-role="listview" data-theme="a">
+                    <li>
+                        <a href="#post" data-theme="b">
+                            text
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- text to display if there is no data -->
+                <h3 id="myblock_no_activity"></h3>
+            </div>
+        </div>
+
+        <div data-role="page" id="about" data-theme="a" data-add-back-btn="true">
+            <div data-role="header" data-position="fixed" data-theme="b">
+                <h1>About</h1>
+                <a href="#navigation" data-transition="none" class="ui-btn-right ui-btn ui-btn-icon-notext ui-btn-corner-all ui-shadow ui-btn-up-b" data-iconpos="notext" data-theme="b" data-role="button" data-icon="grid" title=" Navigation ">
+                                <span class="ui-btn-inner ui-btn-corner-all">
+                                                    <span class="ui-btn-text"> Navigation </span>
+                                                                    <span data-form="ui-icon" class="ui-icon ui-icon-grid ui-icon-shadow"></span>
+                                                                                </span>
+                                                                                        </a>
+            </div>
+            <div data-role="content">
+                <p>The Block is a location based social networking site...</p>
+                <p>If you have any feedback, suggestions, or just want to get in touch with us, email <a href="mailto: rishabh@inmyblock.com">rishabhsixfeet@gmail.com</a></p>
+            </div>
+        </div>
+
+        <div data-role="page" id="create_event" data-theme="a" data-add-back-btn="true">
+            <div data-role="header" data-position="fixed" data-theme="b">
+                <h1>Create Event</h1>
+                <a href="#navigation" data-transition="none" class="ui-btn-right ui-btn ui-btn-icon-notext ui-btn-corner-all ui-shadow ui-btn-up-b" data-iconpos="notext" data-theme="b" data-role="button" data-icon="grid" title=" Navigation ">
+                                <span class="ui-btn-inner ui-btn-corner-all">
+                                                    <span class="ui-btn-text"> Navigation </span>
+                                                                    <span data-form="ui-icon" class="ui-icon ui-icon-grid ui-icon-shadow"></span>
+                                                                                </span>
+                                                                                        </a>
+            </div>
+            <div data-role="content">
+                <h3>Create an event that is happening today in this block that anyone can come to</h3>
+                <label for="event_title" class="ui-hidden-accessible">Title:</label>
+                <input type="text" name="title" id="event_title" value="" placeholder="Event title"/>
+                <label for="event_time" class="ui-hidden-accessible">When:</label>
+                <input type="text" name="duration" id="event_time" value="" placeholder="When"/>
+                <label for="event_location" class="ui-hidden-accessible">Where:</label>
+                <input type="text" name="location" id="event_location" value="" placeholder="Where"/>
+                <label for="event_picture" class="ui-hidden-accessible">Picture:</label>
+                <input type="file" name="location" id="event_picture" value="" placeholder="Event picture"/>
+                <label for="event_description" class="ui-hidden-accessible">Description:</label>
+                <textarea name="description" value="" id="event_description" placeholder="Description"></textarea>
+                <p class="error" id="create_event_error"></p>
+                <button data-theme="b" onclick="createEvent()">Create Event</button>
+            </div>
+        </div>
+    </body>
+</html>

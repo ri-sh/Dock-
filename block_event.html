@@ -1,0 +1,71 @@
+{% extends "posts_template.html" %}
+
+{% block links %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/im_attending.js"></script>
+<script type="text/javascript">
+    var targetUrl = "/rest/block/events/" + {{ id }} + "/offset=";
+</script>
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/comment_loader.js"></script>
+{% endblock %}
+
+{% block data_url %}
+{% endblock %}
+
+{% block content %}
+<div class="span8 offset2 main_content">
+{% if picture != 'default_event.jpg' %}
+<img src="{{ STATIC_PREFIX }}images/{{ picture }}" class="profile_pic" />
+{% endif %}
+{{ block.super }}
+</div>
+{% endblock %}
+
+{% block posts_header %}
+<div class="page-header">
+    <h1>{{ title }}
+{% if user_attending %}
+        <small>You are attending.</small>
+        {% else %}
+        <small id="attending_{{ id }}"></small>
+        <button class="btn btn-success pull-right" id="attending_button{{ id }}" value="I'm attending" onclick="attendingEvent({{ id }})">I'm attending</button></h1>
+{% endif %}
+</div>
+<dl>
+    <dt>When:</dt><dd>{{ duration }}</dd>
+    <dt>Where:</dt><dd>{{ location }}</dd>
+    <!-- list of people attending, all hyperlinked -->
+    <dt>Attending ({{ num_attending }}):</dt><dd>
+    {% for attendee in attending %}
+        <a class="author" href="/desktop/users/{{ attendee.user_id }}/activity/">{{ attendee.name }}</a> 
+    {% endfor %}
+    {% if attending|length == 0 %}
+        No one yet
+    {% endif %}
+    </dd>
+    <dt>Description:</dt><dd>{{ description }}</dd>
+    <dt>Created by</dt><dd><a class="author" href="/desktop/users/{{ author.user_id }}/activity/" >{{ author.name }}</a> {{ relative_timestamp}}</dd>
+    <dt>Comments:</dt><dd></dd>
+</dl>
+<div class="comments well" id="comments_list">
+    {% if comments|length == 10 %}
+    <!-- Display More comments link -->
+    <a href="#more_comments" class="comments_link" id="more_comments">Load more comments</a>
+    {% endif %}
+    {% for comment in comments %}
+    <div class="post_container">
+    <img src="{{ STATIC_PREFIX }}images/Thumbnails/{{ comment.author.profile_pic }}" class="thumbnail"></img>
+    <a href="/desktop/users/{{ comment.author.user_id }}/activity/" class="author">{{ comment.author.name }}</a> <span class="timestamp"> commented {{ comment.relative_timestamp }}</span><br /> 
+    <span class="post_text">{{ comment.text }}</span><br />
+    </div>
+    <div class="dark-divider"></div>
+    {% endfor %}
+    <!-- Form for adding a comment -->
+    <form class="form form-inline" id="create_comment" name="create_comment" action="/desktop/events/create_comment/" method="post">
+        <input type="text" name="text" placeholder="Comment on this event" />
+        <input type="hidden" name="event_id" value="{{ id }}" />
+        <input type="submit" class="btn btn-success" value="Comment" />
+    </form>
+</div>
+
+{% endblock %}

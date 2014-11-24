@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block links %}
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/json2.js"></script>
+{% if request.user.is_authenticated %}
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/userLocation.js"></script>
+{% endif %}
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/jstorage.js"></script>
+<script type="text/javascript" src="{{ STATIC_PREFIX }}static/jquery.esn.autobrowse.js"></script>
+{% block data_url %}
+<script type="text/javascript">
+    function markupItem (item) {
+        //Returns string containing html for this particular item
+                    var markup = '<div class="divider"></div>' + 
+                        '<img src="{{ STATIC_PREFIX }}images/Thumbnails/' + response.activity[i].author.profile_pic + 
+                    '" class="thumbnail"/><a href="/desktop/users/' + response.activity[i].author.user_id 
+                        + '/activity/" class="author">' + response.activity[i].author.name + ' '
+                        + '</a><span class="timestamp">posted ' + response.activity[i].relative_timestamp 
+                        + ' | ' + '</span><a class="comments_link" href="/desktop/posts/' + response.activity[i].id 
+                        + '/comments/">';
+                        if (response.activity[i].num_comments == 0) {
+                            markup += 'Comment';
+                        }
+                        else if (response.activity[i].num_comments == 1) {
+                            markup += 'View 1 comment';
+                        }
+                        else {
+                            markup += 'View ' + response.activity[i].num_comments + ' comments';
+                        }
+                        markup += '</a><br /><span class="post_text">' + response.activity[i].text + '</span><br />';
+                        return markup;
+    }
+</script>
+{% endblock %}
+<script type="text/javascript">
+    $(function () {
+        $(".items").autobrowse(
+            {
+                url: function (offset) {
+                return data_url + offset;
+                },
+                template: function (response) {
+                    //Process response data, which will be in the form of a JSON object
+                    var markup = '';
+                    for (var i = 0; i < response.activity.length; i++) {
+                        markup += markupItem(response.activity[i]);
+                    }
+                    return markup;
+                },
+                itemsReturned: function (response) {
+                    return response.activity.length;
+                },
+                offset: 10,
+                max: 150,
+                loader: '<div class="loader"></div>',
+                useCache: false,
+                expiration: 1
+            }
+        );
+    });
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div class="">
+    {% block posts_header %}
+    {% endblock %}
+    <!-- Put table of posts to this block here -->
+    {% for post in activity %}
+        <div class="divider"></div>
+        <img src="{{ STATIC_PREFIX }}images/Thumbnails/{{ post.author.profile_pic }}" class="thumbnail"/>
+        <div class="post_container">
+        <a href="/desktop/users/{{ post.author.user_id }}/activity/" class="author">{{ post.author.name }}</a><span class="timestamp">posted {{ post.relative_timestamp }} | </span>
+        <a class="comments_link" href="/desktop/posts/{{ post.id }}/comments/">
+            {% if post.num_comments == 0 %}
+            Comment
+            {% else %}
+                {% if post.num_comments == 1 %}
+                View <span class="badge badge-success">{{ post.num_comments }}</span> comment
+                {% else %}
+                View <span class="badge badge-success">{{ post.num_comments }}</span> comments
+                {% endif %}
+            {% endif %}
+        </a><br />
+        <span class="post_text">{{ post.text }}</span>
+    </div>
+    {% endfor %}
+    <div class="items"></div>
+    {% block posts_footer %}
+    {% endblock %}
+</div>
+{% endblock %}
